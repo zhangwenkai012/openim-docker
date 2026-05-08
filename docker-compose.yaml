@@ -269,7 +269,29 @@ services:
      ports:
        - "${OPENIM_ADMIN_FRONT_PORT}:80"
      networks:
-       - openim
+      - openim
+
+  # 自研管理前端（源码与 Dockerfile 在上级目录 im-admin/）；推送镜像：docker compose build im-admin && docker compose push im-admin
+  im-admin:
+    build:
+      context: ../im-admin
+      dockerfile: Dockerfile
+    image: ${IM_ADMIN_FRONT_IMAGE:-zhangwenkai013/im-admin:latest}
+    container_name: im-admin
+    restart: always
+    ports:
+      - "${IM_ADMIN_FRONT_PORT:-11003}:80"
+    environment:
+      PROXY_ADMIN: http://openim-chat:10009
+      PROXY_CHAT: http://openim-chat:10008
+      PROXY_IM_GATEWAY: http://openim-server:10002
+    depends_on:
+      openim-chat:
+        condition: service_healthy
+      openim-server:
+        condition: service_healthy
+    networks:
+      - openim
 
   prometheus:
     image: ${PROMETHEUS_IMAGE}
