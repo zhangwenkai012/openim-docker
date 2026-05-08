@@ -272,6 +272,7 @@ services:
       - openim
 
   # 自研管理前端（源码与 Dockerfile 在上级目录 im-admin/）；推送镜像：docker compose build im-admin && docker compose push im-admin
+  # 仅等容器启动、不等 healthy：openim-server/chat 的 mage check 较慢或失败时，不应拖住整条 compose；就绪前页面可能短暂 502
   im-admin:
     build:
       context: ../im-admin
@@ -286,10 +287,8 @@ services:
       PROXY_CHAT: http://openim-chat:10008
       PROXY_IM_GATEWAY: http://openim-server:10002
     depends_on:
-      openim-chat:
-        condition: service_healthy
-      openim-server:
-        condition: service_healthy
+      - openim-chat
+      - openim-server
     networks:
       - openim
 
