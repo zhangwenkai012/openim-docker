@@ -272,7 +272,6 @@ services:
       - openim
 
   # 自研管理前端（源码与 Dockerfile 在上级目录 im-admin/）；推送镜像：docker compose build im-admin && docker compose push im-admin
-  # 仅等容器启动、不等 healthy：openim-server/chat 的 mage check 较慢或失败时，不应拖住整条 compose；就绪前页面可能短暂 502
   im-admin:
     build:
       context: ../im-admin
@@ -286,6 +285,25 @@ services:
       PROXY_ADMIN: http://openim-chat:10009
       PROXY_CHAT: http://openim-chat:10008
       PROXY_IM_GATEWAY: http://openim-server:10002
+    depends_on:
+      - openim-chat
+      - openim-server
+    networks:
+      - openim
+
+  # H5 客户端。build.context 为相对「本文件所在目录」的 ../openim-h5
+  # 例：compose 在 /opt/open_im/openim-docker 时，必须有同级目录 /opt/open_im/openim-h5（完整源码），否则会报 path not found
+  # 若服务器上不想放源码：在能联网构建的机器上 docker build 后 push 镜像，此处删掉 build 段、只保留 image 与 .env 里 IM_H5_FRONT_IMAGE
+  openim-h5:
+    image: ${IM_H5_FRONT_IMAGE:-zhangwenkai013/openim-h5:latest}
+    container_name: openim-h5
+    restart: always
+    ports:
+      - "${IM_H5_FRONT_PORT:-11004}:80"
+    environment:
+      PROXY_IM_GATEWAY: http://openim-server:10002
+      PROXY_CHAT: http://openim-chat:10008
+      PROXY_MSG_GATEWAY: http://openim-server:10001
     depends_on:
       - openim-chat
       - openim-server
