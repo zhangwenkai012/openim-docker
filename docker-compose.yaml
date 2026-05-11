@@ -271,7 +271,7 @@ services:
      networks:
       - openim
 
-  # 自研管理前端（源码与 Dockerfile 在上级目录 im-admin/）；推送镜像：docker compose build im-admin && docker compose push im-admin
+  # 自研管理前端
   im-admin:
     build:
       context: ../im-admin
@@ -291,9 +291,7 @@ services:
     networks:
       - openim
 
-  # H5 客户端。build.context 为相对「本文件所在目录」的 ../openim-h5
-  # 例：compose 在 /opt/open_im/openim-docker 时，必须有同级目录 /opt/open_im/openim-h5（完整源码），否则会报 path not found
-  # 若服务器上不想放源码：在能联网构建的机器上 docker build 后 push 镜像，此处删掉 build 段、只保留 image 与 .env 里 IM_H5_FRONT_IMAGE
+  # H5 客户端
   openim-h5:
     image: ${IM_H5_FRONT_IMAGE:-zhangwenkai013/openim-h5:latest}
     container_name: openim-h5
@@ -422,6 +420,10 @@ services:
     image: ${OPENIM_CHAT_IMAGE}
     container_name: openim-chat
     init: true
+    # AccessKey 等敏感项放在 .env.secrets（已 gitignore），勿提交
+    env_file:
+      - path: .env.secrets
+        required: false
     healthcheck:
       test: ["CMD", "sh", "-c", "mage check"]
       interval: 5s
@@ -440,6 +442,11 @@ services:
       - CHATENV_SHARE_OPENIM_APIURL=${API_URL}
       - CHATENV_LOG_ISSTDOUT=${LOG_IS_STDOUT}
       - CHATENV_LOG_REMAINLOGLEVEL=${LOG_LEVEL}
+      # chat-rpc-chat.yml：阿里云短信（非密钥见 .env；AccessKey 见 .env.secrets）
+      - CHATENV_CHAT_RPC_CHAT_VERIFYCODE_PHONE_USE=ali
+      - CHATENV_CHAT_RPC_CHAT_VERIFYCODE_PHONE_ALI_ENDPOINT=${ALIYUN_SMS_ENDPOINT}
+      - CHATENV_CHAT_RPC_CHAT_VERIFYCODE_PHONE_ALI_SIGNNAME=${ALIYUN_SMS_SIGN_NAME}
+      - CHATENV_CHAT_RPC_CHAT_VERIFYCODE_PHONE_ALI_VERIFICATIONCODETEMPLATECODE=${ALIYUN_SMS_TEMPLATE_CODE}
     ports:
       - "${CHAT_API_PORT}:10008"
       - "${ADMIN_API_PORT}:10009"

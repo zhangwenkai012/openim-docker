@@ -31,6 +31,9 @@ openim-chat/config
 
 # openkf
 
+### Local secrets (never commit) ###
+.env.secrets
+
 ### OpenIM developer supplement ###
 logs
 .devcontainer
