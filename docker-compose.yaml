@@ -447,16 +447,24 @@ services:
       - CHATENV_CHAT_RPC_CHAT_VERIFYCODE_PHONE_ALI_ENDPOINT=${ALIYUN_SMS_ENDPOINT}
       - CHATENV_CHAT_RPC_CHAT_VERIFYCODE_PHONE_ALI_SIGNNAME=${ALIYUN_SMS_SIGN_NAME}
       - CHATENV_CHAT_RPC_CHAT_VERIFYCODE_PHONE_ALI_VERIFICATIONCODETEMPLATECODE=${ALIYUN_SMS_TEMPLATE_CODE}
+      # 邮件验证码：.env.secrets 中 CHATENV_CHAT_RPC_CHAT_VERIFYCODE_MAIL_*（use=smtp 或 use=dm + dm.*），勿提交密钥
     ports:
       - "${CHAT_API_PORT}:10008"
       - "${ADMIN_API_PORT}:10009"
     restart: always
+    # 等 openim-server 健康后再起 chat，避免连 10002 时出现 connection refused（仅 depends_on 列表不等待进程就绪）
     depends_on:
-      - mongo
-      - redis
-      - etcd
-      - kafka
-      - minio
-      - openim-server
+      mongo:
+        condition: service_started
+      redis:
+        condition: service_started
+      etcd:
+        condition: service_started
+      kafka:
+        condition: service_started
+      minio:
+        condition: service_started
+      openim-server:
+        condition: service_healthy
     networks:
       - openim
