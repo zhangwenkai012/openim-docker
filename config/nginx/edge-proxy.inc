@@ -1,8 +1,10 @@
 proxy_http_version 1.1;
+# 转发到后端容器时用 $host（客户端域名）；若后端需要固定 Host 可改为 $proxy_host
 proxy_set_header Host $host;
 proxy_set_header X-Real-IP $remote_addr;
 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 proxy_set_header X-Forwarded-Proto $scheme;
+proxy_set_header X-Forwarded-Host $host;
 proxy_set_header Upgrade $http_upgrade;
 proxy_set_header Connection $connection_upgrade;
 proxy_connect_timeout 60s;
