@@ -263,7 +263,7 @@ services:
       - "${LIVEKIT_ICE_UDP_PORT:-7882}:7882/udp"
       - "50000-60000:50000-60000/udp"
     volumes:
-      - ../chat/livekit/livekit.yaml:/livekit.yaml:ro
+      - ./config/livekit/livekit.yaml:/livekit.yaml:ro
     command: >
       --config /livekit.yaml
       --bind 0.0.0.0
