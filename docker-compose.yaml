@@ -253,6 +253,24 @@ services:
     networks:
       - openim
 
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: livekit
+    restart: always
+    ports:
+      - "${LIVEKIT_PORT:-7880}:7880"
+      - "${LIVEKIT_RTC_TCP_PORT:-7881}:7881"
+      - "${LIVEKIT_ICE_UDP_PORT:-7882}:7882/udp"
+      - "50000-60000:50000-60000/udp"
+    volumes:
+      - ../chat/livekit/livekit.yaml:/livekit.yaml:ro
+    command: >
+      --config /livekit.yaml
+      --bind 0.0.0.0
+      --node-ip=${LIVEKIT_NODE_IP}
+    networks:
+      - openim
+
   openim-web-front:
     image: ${OPENIM_WEB_FRONT_IMAGE}
     container_name: openim-web-front
@@ -313,6 +331,7 @@ services:
       - openim-admin-front
       - openim-web-front
       - minio
+      - livekit
     networks:
       - openim
 
@@ -472,7 +491,8 @@ services:
       - CHATENV_SHARE_OPENIM_APIURL=${API_URL}
       - CHATENV_SHARE_IOSWEBCLIP_ENABLE=true
       - CHATENV_SHARE_IOSWEBCLIP_H5URL=${IM_H5_PUBLIC_ORIGIN}
-      - CHATENV_SHARE_IOSWEBCLIP_APPNAME=IM
+      - CHATENV_SHARE_IOSWEBCLIP_APPNAME=鸽聊
+      - CHATENV_SHARE_IOSWEBCLIP_ICONPATH=config/ios-webclip-icon.png
       - CHATENV_SHARE_IOSWEBCLIP_PAYLOADIDENTIFIER=com.zim.openim.webclip
       - CHATENV_LOG_ISSTDOUT=${LOG_IS_STDOUT}
       - CHATENV_LOG_REMAINLOGLEVEL=${LOG_LEVEL}
@@ -481,7 +501,14 @@ services:
       - CHATENV_CHAT_RPC_CHAT_VERIFYCODE_PHONE_ALI_ENDPOINT=${ALIYUN_SMS_ENDPOINT}
       - CHATENV_CHAT_RPC_CHAT_VERIFYCODE_PHONE_ALI_SIGNNAME=${ALIYUN_SMS_SIGN_NAME}
       - CHATENV_CHAT_RPC_CHAT_VERIFYCODE_PHONE_ALI_VERIFICATIONCODETEMPLATECODE=${ALIYUN_SMS_TEMPLATE_CODE}
+      # LiveKit 音视频（livekit.dsvxt.cn）；密钥可与 chat/livekit/livekit.yaml 一致
+      - CHATENV_CHAT_RPC_CHAT_LIVEKIT_URL=${LIVEKIT_PUBLIC_URL}
+      - CHATENV_CHAT_RPC_CHAT_LIVEKIT_KEY=${LIVEKIT_API_KEY}
+      - CHATENV_CHAT_RPC_CHAT_LIVEKIT_SECRET=${LIVEKIT_API_SECRET}
       # 邮件验证码：.env.secrets 中 CHATENV_CHAT_RPC_CHAT_VERIFYCODE_MAIL_*（use=smtp 或 use=dm + dm.*），勿提交密钥
+    volumes:
+      # iOS 描述文件桌面图标（与 Electron/Android 同源 512_512.png，chat 自动生成 Base64）
+      - ./config/ios-webclip-icon.png:/openim-chat/config/ios-webclip-icon.png:ro
     ports:
       - "${CHAT_API_PORT}:10008"
       - "${ADMIN_API_PORT}:10009"
