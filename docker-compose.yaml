@@ -261,7 +261,7 @@ services:
       - "${LIVEKIT_PORT:-7880}:7880"
       - "${LIVEKIT_RTC_TCP_PORT:-7881}:7881"
       - "${LIVEKIT_ICE_UDP_PORT:-7882}:7882/udp"
-      - "50000-60000:50000-60000/udp"
+      - "50000-50200:50000-50200/udp"
     volumes:
       - ./config/livekit/livekit.yaml:/livekit.yaml:ro
     command: >
