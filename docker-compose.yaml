@@ -248,6 +248,7 @@ services:
       TZ: Asia/Shanghai
       MINIO_ROOT_USER: "${MINIO_ACCESS_KEY_ID}"
       MINIO_ROOT_PASSWORD: "${MINIO_SECRET_ACCESS_KEY}"
+      MINIO_SERVER_URL: "${MINIO_EXTERNAL_ADDRESS}"
     restart: always
     command: minio server /data --console-address ':9090'
     networks:
