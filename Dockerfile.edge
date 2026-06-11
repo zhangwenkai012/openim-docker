@@ -1,0 +1,10 @@
+# openim-edge：统一网关 + download.dsvxt.cn 静态下载页（配置 baked-in）
+FROM nginx:1.27-alpine
+
+COPY config/nginx/edge.conf /etc/nginx/conf.d/default.conf
+COPY config/nginx/edge-upstreams.conf /etc/nginx/edge-upstreams.conf
+COPY config/nginx/edge-proxy.inc /etc/nginx/conf.d/edge-proxy.inc
+COPY config/nginx/edge-minio.inc /etc/nginx/conf.d/edge-minio.inc
+COPY config/nginx/download /var/www/download
+
+EXPOSE 80
