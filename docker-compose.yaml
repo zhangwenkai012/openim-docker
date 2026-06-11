@@ -324,6 +324,7 @@ services:
       - ./config/nginx/edge-upstreams.conf:/etc/nginx/edge-upstreams.conf:ro
       - ./config/nginx/edge-proxy.inc:/etc/nginx/conf.d/edge-proxy.inc:ro
       - ./config/nginx/edge-minio.inc:/etc/nginx/conf.d/edge-minio.inc:ro
+      - ./config/nginx/download:/var/www/download:ro
     depends_on:
       - openim-server
       - openim-chat
