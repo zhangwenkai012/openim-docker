@@ -4,6 +4,7 @@ FROM nginx:1.27-alpine
 COPY config/nginx/edge.conf /etc/nginx/conf.d/default.conf
 COPY config/nginx/edge-upstreams.conf /etc/nginx/edge-upstreams.conf
 COPY config/nginx/edge-proxy.inc /etc/nginx/conf.d/edge-proxy.inc
+COPY config/nginx/edge-h5-proxy.inc /etc/nginx/conf.d/edge-h5-proxy.inc
 COPY config/nginx/edge-minio.inc /etc/nginx/conf.d/edge-minio.inc
 COPY config/nginx/download /var/www/download
 
